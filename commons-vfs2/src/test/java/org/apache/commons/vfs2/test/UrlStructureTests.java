@@ -17,9 +17,11 @@
 package org.apache.commons.vfs2.test;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileObject;
+import org.junit.Test;
 
 /**
  * URL Test cases for providers that supply structural info.
@@ -30,16 +32,17 @@ public class UrlStructureTests extends AbstractProviderTestCase {
      */
     @Override
     protected Capability[] getRequiredCaps() {
-        return new Capability[] { Capability.GET_TYPE, Capability.URI };
+        return new Capability[] {Capability.GET_TYPE, Capability.URI};
     }
 
     /**
      * Tests that folders have no content.
      */
+    @Test
     public void testFolderURL() throws Exception {
         final FileObject folder = getReadFolder().resolveFile("dir1");
         if (folder.getFileSystem().hasCapability(Capability.DIRECTORY_READ_CONTENT)) {
-            // test might not fail on e.g. HttpFileSystem as there are no direcotries.
+            // test might not fail on e.g. HttpFileSystem as there are no directories.
             // A Directory do have a content on http. e.g a generated directory listing or the index.html page.
             return;
         }
@@ -47,8 +50,7 @@ public class UrlStructureTests extends AbstractProviderTestCase {
         assertTrue(folder.exists());
 
         // Try getting the content of a folder
-        try {
-            folder.getURL().openConnection().getInputStream();
+        try (final InputStream inputStream = folder.getURL().openConnection().getInputStream()) {
             fail();
         } catch (final IOException e) {
             assertSameMessage("vfs.provider/read-not-file.error", folder, e);

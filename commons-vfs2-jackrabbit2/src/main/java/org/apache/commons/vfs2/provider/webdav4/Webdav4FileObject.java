@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +79,7 @@ import org.w3c.dom.Node;
  * @since 2.5.0
  */
 public class Webdav4FileObject extends Http4FileObject<Webdav4FileSystem> {
+
     /**
      * An OutputStream that writes to a Webdav resource.
      * <p>
@@ -220,12 +221,12 @@ public class Webdav4FileObject extends Http4FileObject<Webdav4FileSystem> {
     private final Webdav4FileSystem fileSystem;
 
     protected Webdav4FileObject(final AbstractFileName name, final Webdav4FileSystem fileSystem)
-            throws FileSystemException, URISyntaxException {
+            throws FileSystemException {
         this(name, fileSystem, Webdav4FileSystemConfigBuilder.getInstance());
     }
 
     protected Webdav4FileObject(final AbstractFileName name, final Webdav4FileSystem fileSystem,
-            final Webdav4FileSystemConfigBuilder builder) throws FileSystemException, URISyntaxException {
+            final Webdav4FileSystemConfigBuilder builder) throws FileSystemException {
         super(name, fileSystem, builder);
         this.fileSystem = fileSystem;
         this.builder = builder;
@@ -485,6 +486,12 @@ public class Webdav4FileObject extends Http4FileObject<Webdav4FileSystem> {
         return new Webdav4FileContentInfoFactory();
     }
 
+    // Just for the unit test in the same package (package-private) to access this during validation.
+    @Override
+    protected URI getInternalURI() throws FileSystemException {
+        return super.getInternalURI();
+    }
+
     DavPropertySet getProperties(final GenericURLFileName name) throws FileSystemException {
         return getProperties(name, DavConstants.PROPFIND_ALL_PROP, new DavPropertyNameSet(), false);
     }
@@ -588,7 +595,7 @@ public class Webdav4FileObject extends Http4FileObject<Webdav4FileSystem> {
         return i >= 0 ? path.substring(i + 1) : path;
     }
 
-    private void setupRequest(final HttpUriRequest request) throws FileSystemException {
+    private void setupRequest(final HttpUriRequest request) {
         // NOTE: *FileSystemConfigBuilder takes care of redirect option and user agent.
         request.addHeader("Cache-control", "no-cache");
         request.addHeader("Cache-store", "no-store");

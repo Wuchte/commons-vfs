@@ -28,13 +28,14 @@ import org.apache.commons.vfs2.provider.webdav.WebdavFileSystemConfigBuilder;
 import org.apache.commons.vfs2.test.AbstractProviderTestCase;
 import org.apache.jackrabbit.webdav.version.DeltaVConstants;
 import org.apache.jackrabbit.webdav.version.VersionControlledResource;
+import org.junit.Test;
 
 /**
  * Test to verify Webdav Versioning support
  */
 public class WebdavVersioningTests extends AbstractProviderTestCase {
-    /**
-     */
+
+    @Test
     public void testVersioning() throws Exception {
         final FileObject scratchFolder = createScratchFolder();
         final FileSystemOptions opts = scratchFolder.getFileSystem().getFileSystemOptions();
@@ -67,11 +68,8 @@ public class WebdavVersioningTests extends AbstractProviderTestCase {
         // Create the source file
         final String content = "Here is some sample content for the file.  Blah Blah Blah.";
 
-        final OutputStream os = file.getContent().getOutputStream();
-        try {
+        try (OutputStream os = file.getContent().getOutputStream()) {
             os.write(content.getBytes("utf-8"));
-        } finally {
-            os.close();
         }
         assertSameContent(content, file);
         map = file.getContent().getAttributes();
@@ -83,8 +81,7 @@ public class WebdavVersioningTests extends AbstractProviderTestCase {
         builder.setVersioning(opts, false);
     }
 
-    /**
-     */
+    @Test
     public void testVersioningWithCreator() throws Exception {
         final FileObject scratchFolder = createScratchFolder();
         final FileSystemOptions opts = scratchFolder.getFileSystem().getFileSystemOptions();
@@ -120,11 +117,8 @@ public class WebdavVersioningTests extends AbstractProviderTestCase {
         // Create the source file
         final String content = "Here is some sample content for the file.  Blah Blah Blah.";
 
-        final OutputStream os = file.getContent().getOutputStream();
-        try {
+        try (OutputStream os = file.getContent().getOutputStream()) {
             os.write(content.getBytes("utf-8"));
-        } finally {
-            os.close();
         }
         assertSameContent(content, file);
         map = file.getContent().getAttributes();

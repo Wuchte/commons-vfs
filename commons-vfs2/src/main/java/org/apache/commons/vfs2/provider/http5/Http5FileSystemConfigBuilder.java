@@ -16,11 +16,14 @@
  */
 package org.apache.commons.vfs2.provider.http5;
 
+import java.security.KeyStore;
+
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.core5.http.HttpHost;
 
 /**
  * Configuration options builder utility for http5 provider.
@@ -88,6 +91,11 @@ public class Http5FileSystemConfigBuilder extends FileSystemConfigBuilder {
     private static final String KEYSTORE_PASS = "http.keystorePass";
 
     /**
+     * Defines the keystore type for the underlying HttpClient.
+     */
+    private static final String KEYSTORE_TYPE = "http.keyStoreType";
+
+    /**
      * Defines whether the host name should be verified or not in SSL connections.
      * <p>
      * This parameter expects a value of type {@link Boolean}.
@@ -110,6 +118,14 @@ public class Http5FileSystemConfigBuilder extends FileSystemConfigBuilder {
      * </p>
      */
     private static final String KEY_USER_AGENT = "userAgent";
+
+    /**
+     * Defines http scheme for proxy host
+     *<p>
+     *This parameter expects a value of type {@link String}.
+     *</p>
+     */
+    private static final String PROXY_SCHEME = "proxyScheme";
 
     /**
      * Defines whether the preemptive authentication should be enabled or not.
@@ -243,6 +259,19 @@ public class Http5FileSystemConfigBuilder extends FileSystemConfigBuilder {
     }
 
     /**
+     * Sets the proxy-scheme to use for http connection. You have to set the ProxyHost too if you would like to have the
+     * proxy really used.
+     *
+     * @param opts The FileSystem options.
+     * @param proxyScheme the protocol scheme
+     * @see #setProxyHost
+     * @since 2.7.0
+     */
+    public void setProxyScheme(final FileSystemOptions opts, final String proxyScheme) {
+        setParam(opts, PROXY_SCHEME, proxyScheme);
+    }
+
+    /**
      * Gets the proxy to use for http connection. You have to set the ProxyPort too if you would like to have the proxy
      * really used.
      *
@@ -264,6 +293,19 @@ public class Http5FileSystemConfigBuilder extends FileSystemConfigBuilder {
      */
     public int getProxyPort(final FileSystemOptions opts) {
         return getInteger(opts, "proxyPort", 0);
+    }
+
+    /**
+     * Gets the proxy-scheme to use for http the connection. You have to set the ProxyHost too if you would like to have
+     * the proxy really used.
+     *
+     * @param opts The FileSystem options.
+     * @return proxyScheme: the http/https scheme of proxy server
+     * @see #setProxyHost
+     * @since 2.7.0
+     */
+    public String getProxyScheme(final FileSystemOptions opts) {
+        return getString(opts, PROXY_SCHEME, HttpHost.DEFAULT_SCHEME.getId());
     }
 
     /**
@@ -507,6 +549,25 @@ public class Http5FileSystemConfigBuilder extends FileSystemConfigBuilder {
         return (String) getParam(opts, KEYSTORE_PASS);
     }
 
+    /**
+     * Set keystore type for SSL connections.
+     * @param opts the file system options to modify
+     * @param keyStoreType keystore type for SSL connections
+     * @since 2.7.0
+     */
+    public void setKeyStoreType(final FileSystemOptions opts, final String keyStoreType) {
+        setParam(opts, KEYSTORE_TYPE, keyStoreType);
+    }
+
+    /**
+     * Get keystore type for SSL connections.
+     * @param opts the file system options to modify
+     * @return keystore type for SSL connections
+     * @since 2.7.0
+     */
+    public String getKeyStoreType(final FileSystemOptions opts) {
+        return getString(opts, KEYSTORE_TYPE, KeyStore.getDefaultType());
+    }
     /**
      * Sets if the hostname should be verified in SSL context.
      *

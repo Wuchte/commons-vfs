@@ -194,9 +194,7 @@ public class DelegatingFileSystemOptionsBuilder {
         ctx.fileSystemConfigBuilder = getManager().getFileSystemConfigBuilder(ctx.scheme);
 
         // try to find a setter which could accept the value
-        final Iterator<Method> iterConfigSetters = ctx.configSetters.iterator();
-        while (iterConfigSetters.hasNext()) {
-            final Method configSetter = iterConfigSetters.next();
+        for (final Method configSetter : ctx.configSetters) {
             if (convertValuesAndInvoke(configSetter, ctx)) {
                 return;
             }
@@ -263,7 +261,7 @@ public class DelegatingFileSystemOptionsBuilder {
             for (int iterValues = 0; iterValues < ctx.values.length; iterValues++) {
                 try {
                     Array.set(convertedValues, iterValues,
-                            valueConstructor.newInstance(new Object[] { ctx.values[iterValues] }));
+                            valueConstructor.newInstance(ctx.values[iterValues]));
                 } catch (final InstantiationException e) {
                     throw new FileSystemException(e);
                 } catch (final IllegalAccessException e) {
@@ -292,7 +290,7 @@ public class DelegatingFileSystemOptionsBuilder {
             for (int iterValues = 0; iterValues < ctx.values.length; iterValues++) {
                 try {
                     Array.set(convertedValues, iterValues,
-                            valueFactory.invoke(null, new Object[] { ctx.values[iterValues] }));
+                            valueFactory.invoke(null, ctx.values[iterValues]));
                 } catch (final IllegalAccessException e) {
                     throw new FileSystemException(e);
                 } catch (final InvocationTargetException e) {

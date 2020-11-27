@@ -19,7 +19,6 @@ package org.apache.commons.vfs2.provider.http5;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileNotFoundException;
@@ -75,10 +74,9 @@ public class Http5FileObject<FS extends Http5FileSystem> extends AbstractFileObj
      * @param name file name
      * @param fileSystem file system
      * @throws FileSystemException if any error occurs
-     * @throws URISyntaxException if given file name cannot be converted to a URI due to URI syntax error
      */
     protected Http5FileObject(final AbstractFileName name, final FS fileSystem)
-            throws FileSystemException, URISyntaxException {
+            throws FileSystemException {
         this(name, fileSystem, Http5FileSystemConfigBuilder.getInstance());
     }
 
@@ -89,10 +87,9 @@ public class Http5FileObject<FS extends Http5FileSystem> extends AbstractFileObj
      * @param fileSystem file system
      * @param builder {@code Http4FileSystemConfigBuilder} object
      * @throws FileSystemException if any error occurs
-     * @throws URISyntaxException if given file name cannot be converted to a URI due to URI syntax error
      */
     protected Http5FileObject(final AbstractFileName name, final FS fileSystem,
-            final Http5FileSystemConfigBuilder builder) throws FileSystemException, URISyntaxException {
+            final Http5FileSystemConfigBuilder builder) throws FileSystemException {
         super(name, fileSystem);
         final FileSystemOptions fileSystemOptions = fileSystem.getFileSystemOptions();
         urlCharset = builder.getUrlCharset(fileSystemOptions);

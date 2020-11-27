@@ -20,12 +20,14 @@ import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.util.RandomAccessMode;
+import org.junit.Test;
 
 /**
  * Random read-only test case for file providers.
  *
  */
 public class ProviderRandomReadTests extends AbstractProviderTestCase {
+
     private static final String TEST_DATA = "This is a test file.";
 
     /**
@@ -39,10 +41,9 @@ public class ProviderRandomReadTests extends AbstractProviderTestCase {
     /**
      * Read a file
      */
+    @Test
     public void testRandomRead() throws Exception {
-        FileObject file = null;
-        try {
-            file = getReadFolder().resolveFile("file1.txt");
+        try (FileObject file = getReadFolder().resolveFile("file1.txt")) {
             final RandomAccessContent ra = file.getContent().getRandomAccessContent(RandomAccessMode.READ);
 
             // read first byte
@@ -79,10 +80,6 @@ public class ProviderRandomReadTests extends AbstractProviderTestCase {
             c = ra.readByte();
             assertEquals(TEST_DATA.charAt(11), c);
             assertEquals("fp", 12, ra.getFilePointer());
-        } finally {
-            if (file != null) {
-                file.close();
-            }
         }
     }
 }

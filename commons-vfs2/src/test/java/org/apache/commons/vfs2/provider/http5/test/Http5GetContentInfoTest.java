@@ -16,6 +16,9 @@
  */
 package org.apache.commons.vfs2.provider.http5.test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -27,9 +30,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Tests VFS-427 NPE on Http5FileObject.getContent().getContentInfo().
@@ -73,6 +73,7 @@ public class Http5GetContentInfoTest extends TestCase {
         final FileSystemOptions opts = new FileSystemOptions();
         builder.setProxyHost(opts, proxyHost);
         builder.setProxyPort(opts, proxyPort);
+        builder.setProxyScheme(opts, "http");
         return opts;
     }
 }

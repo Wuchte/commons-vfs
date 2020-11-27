@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Read-only test cases for file providers.
@@ -59,6 +60,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Walks the base folder structure, asserting it contains exactly the expected files and folders.
      */
+    @Test
     public void testStructure() throws Exception {
         final FileInfo baseInfo = buildExpectedStructure();
         assertSameStructure(getReadFolder(), baseInfo);
@@ -125,6 +127,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests type determination.
      */
+    @Test
     public void testType() throws Exception {
         // Test a file
         FileObject file = resolveFile1Txt();
@@ -144,6 +147,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests the contents of root of file system can be listed.
      */
+    @Test
     public void testRoot() throws FileSystemException {
         if (!this.getProviderConfig().isFileSystemRootAccessible()) {
             return;
@@ -157,6 +161,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that FileObjects can be sorted.
      */
+    @Test
     public void testSort() throws FileSystemException {
         final FileInfo fileInfo = buildExpectedStructure();
         final VerifyingFileSelector selector = new VerifyingFileSelector(fileInfo);
@@ -185,6 +190,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that folders have no content.
      */
+    @Test
     public void testFolderContent() throws Exception {
         if (getFileSystem().hasCapability(Capability.DIRECTORY_READ_CONTENT)) {
             // test wont fail
@@ -204,6 +210,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that test read folder is not hidden.
      */
+    @Test
     public void testFolderIsHidden() throws Exception {
         final FileObject folder = getReadFolderDir1();
         Assert.assertFalse(folder.isHidden());
@@ -212,6 +219,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that test read folder is not a symbolic link.
      */
+    @Test
     public void testFolderIsSymbolicLink() throws Exception {
         final FileObject folder = getReadFolderDir1();
         Assert.assertFalse(folder.isSymbolicLink());
@@ -220,11 +228,13 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that test read folder is readable.
      */
+    @Test
     public void testFolderIsReadable() throws Exception {
         final FileObject folder = getReadFolderDir1();
         Assert.assertTrue(folder.isReadable());
     }
 
+    @Test
     public void testGetContent() throws Exception {
         final FileObject file = resolveFile1Txt();
         assertTrue(file.exists());
@@ -232,6 +242,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
         assertNotNull(content);
     }
 
+    @Test
     public void testGetContentInfo() throws Exception {
         final FileObject file = resolveFile1Txt();
         assertTrue(file.exists());
@@ -248,48 +259,45 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests can read multiple time end of stream of empty file
      */
+    @Test
     public void testReadEmptyMultipleEOF() throws Exception {
         final FileObject file = getReadFolder().resolveFile("empty.txt");
         assertTrue(file.exists());
 
         // Start reading from the file
-        final InputStream instr = file.getContent().getInputStream();
-        try {
+        try (InputStream instr = file.getContent().getInputStream()) {
             assertEquals("read() from empty file should return EOF", -1, instr.read());
 
             for (int i = 0; i < 5; i++) {
                 assertEquals("multiple read() at EOF should return EOF", -1, instr.read());
             }
-        } finally {
-            instr.close();
         }
     }
 
     /**
      * Tests can read multiple time end of stream
      */
+    @Test
     public void testReadFileEOFMultiple() throws Exception {
         final FileObject file = getReadFolder().resolveFile("file1.txt");
         assertTrue(file.exists());
         assertEquals("Expecting 20 bytes test-data file1.txt", 20, file.getContent().getSize());
 
         // Start reading from the file
-        final InputStream instr = file.getContent().getInputStream();
-        try {
+        try (InputStream instr = file.getContent().getInputStream()) {
             final byte[] buf = new byte[25];
             assertEquals(20, instr.read(buf));
 
             for (int i = 0; i < 5; i++) {
                 assertEquals("multiple read(byte[]) at EOF should return EOF", -1, instr.read(buf));
             }
-        } finally {
-            instr.close();
         }
     }
 
     /**
      * Tests can perform operations on a folder while reading from a different files.
      */
+    @Test
     public void testConcurrentReadFolder() throws Exception {
         final FileObject file = resolveFile1Txt();
         assertTrue(file.exists());
@@ -297,20 +305,18 @@ public class ProviderReadTests extends AbstractProviderTestCase {
         assertTrue(folder.exists());
 
         // Start reading from the file
-        final InputStream instr = file.getContent().getInputStream();
-        try {
+        try (InputStream instr = file.getContent().getInputStream()) {
             // Do some operations
             folder.exists();
             folder.getType();
             folder.getChildren();
-        } finally {
-            instr.close();
         }
     }
 
     /**
      * Tests that findFiles() works.
      */
+    @Test
     public void testFindFiles() throws Exception {
         final FileInfo fileInfo = buildExpectedStructure();
         final VerifyingFileSelector selector = new VerifyingFileSelector(fileInfo);
@@ -332,6 +338,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that we can traverse a folder that has JAR name.
      */
+    @Test
     public void testDotJarFolderName() throws Exception {
         final FileObject folder = getReadFolderDir1().resolveFile("subdir4.jar");
         Assert.assertTrue(folder.exists());
@@ -342,6 +349,7 @@ public class ProviderReadTests extends AbstractProviderTestCase {
     /**
      * Tests that a folder can't be layered.
      */
+    @Test
     public void testDotJarFolderNameLayer() throws Exception {
         final FileObject folder = getReadFolderDir1().resolveFile("subdir4.jar");
         Assert.assertTrue("subdir4.jar/ must exist as folder, check test setup.", folder.isFolder());
